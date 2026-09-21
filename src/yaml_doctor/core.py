@@ -79,9 +79,16 @@ def diagnose(text: str, *, max_line_length: int = 120, forbid_tabs: bool = True)
 
 
 def format_yaml(text: str, *, sort_keys: bool = False, explicit_start: bool = False) -> str:
-    docs = load_documents(text)
-    rendered = yaml.safe_dump_all(docs, sort_keys=sort_keys, allow_unicode=True, default_flow_style=False, explicit_start=explicit_start)
-    return rendered
+    try:
+        docs = load_documents(text)
+    except DuplicateKeyError:
+        raise
+    except yaml.YAMLError as exc:
+        mark = getattr(exc, "problem_mark", None)
+        location = f" at line {mark.line + 1}, column {mark.column + 1}" if mark else ""
+        raise ValueError(f"invalid YAML{location}: {getattr(exc, 'problem', None) or str(exc)}") from exc
+    return yaml.safe_dump_all(docs, sort_keys=sort_keys, allow_unicode=True, default_flow_style=False, explicit_start=explicit_start)
+
 
 _PATH_TOKEN = re.compile(r"([^.[\]]+)|\[(\d+)\]")
 
@@ -92,7 +99,7 @@ def parse_path(path: str) -> list[str | int]:
     tokens: list[str | int] = []
     position = 0
     for match in _PATH_TOKEN.finditer(path):
-        if match.start() != position and not (path[position:match.start()] == "."):
+        if match.start() != position and path[position:match.start()] != ".":
             raise ValueError(f"invalid path near {path[position:]!r}")
         tokens.append(int(match.group(2)) if match.group(2) is not None else match.group(1))
         position = match.end()
