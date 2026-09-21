@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yaml-doctor"
+version = "1.0.0"
+description = "Validate, inspect, format, and diagnose YAML files from the command line."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Radwan Abdulhadi Ahmed"}]
+dependencies = ["PyYAML>=6.0.2,<7"]
+keywords = ["yaml", "validator", "lint", "cli", "developer-tools"]
+classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent"]
+
+[project.scripts]
+yaml-doctor = "yaml_doctor.cli:main"
+
+[project.urls]
+Repository = "https://github.com/rad03i2/yaml-doctor"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
