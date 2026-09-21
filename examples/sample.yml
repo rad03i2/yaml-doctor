@@ -1,0 +1,13 @@
+app:
+  name: YAML Doctor Demo
+  locale: ar-IQ
+services:
+  - name: api
+    enabled: true
+    ports:
+      - 8080
+  - name: worker
+    enabled: false
+metadata:
+  owner: example-user
+  purpose: local-validation-demo
